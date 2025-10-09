@@ -8,6 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, RefreshCw, Download, Rocket, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { YouTubePreview } from "@/components/preview/YouTubePreview";
+import { InstagramPreview } from "@/components/preview/InstagramPreview";
+import { EmailPreview } from "@/components/preview/EmailPreview";
+import { FAQPreview } from "@/components/preview/FAQPreview";
+import { ChatbotPreview } from "@/components/preview/ChatbotPreview";
 
 interface GenerationStatus {
   id: string;
@@ -153,7 +159,7 @@ const ProjectDetail = () => {
     }
   };
 
-  const handleDownload = async (contentType: string) => {
+  const handleDownload = async (contentType: string, format: 'json' | 'txt' | 'csv') => {
     try {
       const { data, error } = await supabase
         .from('deliverables')
@@ -164,12 +170,28 @@ const ProjectDetail = () => {
 
       if (error) throw error;
 
-      // Create downloadable file
-      const blob = new Blob([JSON.stringify(data.content, null, 2)], { type: 'application/json' });
+      let blob: Blob;
+      let filename: string;
+
+      if (format === 'json') {
+        blob = new Blob([JSON.stringify(data.content, null, 2)], {
+          type: 'application/json',
+        });
+        filename = `${contentType}-${new Date().getTime()}.json`;
+      } else if (format === 'txt') {
+        const textContent = formatContentAsText(data.content, contentType);
+        blob = new Blob([textContent], { type: 'text/plain' });
+        filename = `${contentType}-${new Date().getTime()}.txt`;
+      } else {
+        const csvContent = formatContentAsCSV(data.content, contentType);
+        blob = new Blob([csvContent], { type: 'text/csv' });
+        filename = `${contentType}-${new Date().getTime()}.csv`;
+      }
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${contentType}-content.json`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -177,15 +199,84 @@ const ProjectDetail = () => {
 
       toast({
         title: "Download started",
-        description: `${contentType} content downloaded successfully`,
+        description: `Your content is being downloaded as ${format.toUpperCase()}.`,
       });
     } catch (error: any) {
       toast({
-        title: "Error downloading",
+        title: "Download failed",
         description: error.message,
         variant: "destructive",
       });
     }
+  };
+
+  const formatContentAsText = (content: any, contentType: string): string => {
+    let text = `${contentTypeLabels[contentType]}\n${'='.repeat(50)}\n\n`;
+
+    if (contentType === 'youtube') {
+      content.scripts?.forEach((script: any, i: number) => {
+        text += `Short #${i + 1}\n`;
+        text += `Hook: ${script.hook}\n`;
+        text += `Content: ${script.content}\n`;
+        text += `CTA: ${script.cta}\n`;
+        text += `Hashtags: ${script.hashtags?.join(' ')}\n\n`;
+      });
+    } else if (contentType === 'instagram') {
+      content.carousels?.forEach((carousel: any, i: number) => {
+        text += `Carousel #${i + 1}\n`;
+        carousel.slides?.forEach((slide: any, j: number) => {
+          text += `  Slide ${j + 1}: ${slide.text}\n`;
+        });
+        text += `Caption: ${carousel.caption}\n\n`;
+      });
+    } else if (contentType === 'email') {
+      content.emails?.forEach((email: any, i: number) => {
+        text += `Email #${i + 1}\n`;
+        text += `Subject: ${email.subject}\n`;
+        text += `Preview: ${email.preview}\n`;
+        text += `Body:\n${email.body}\n\n`;
+      });
+    } else if (contentType === 'faq') {
+      content.faqs?.forEach((faq: any, i: number) => {
+        text += `Q${i + 1}: ${faq.question}\n`;
+        text += `A: ${faq.answer}\n\n`;
+      });
+    } else if (contentType === 'chatbot') {
+      text += `Greeting: ${content.greeting}\n\n`;
+      text += `Product Info:\n${JSON.stringify(content.product_info, null, 2)}\n\n`;
+      text += `Common Questions:\n`;
+      content.common_questions?.forEach((qa: any, i: number) => {
+        text += `Q${i + 1}: ${qa.question}\nA: ${qa.answer}\n\n`;
+      });
+    }
+
+    return text;
+  };
+
+  const formatContentAsCSV = (content: any, contentType: string): string => {
+    let csv = '';
+
+    if (contentType === 'youtube') {
+      csv = 'Number,Hook,Content,CTA,Hashtags\n';
+      content.scripts?.forEach((script: any, i: number) => {
+        csv += `${i + 1},"${script.hook.replace(/"/g, '""')}","${script.content.replace(/"/g, '""')}","${script.cta.replace(/"/g, '""')}","${script.hashtags?.join(' ')}"\n`;
+      });
+    } else if (contentType === 'email') {
+      csv = 'Number,Subject,Preview,Body,CTA\n';
+      content.emails?.forEach((email: any, i: number) => {
+        csv += `${i + 1},"${email.subject.replace(/"/g, '""')}","${email.preview.replace(/"/g, '""')}","${email.body.replace(/"/g, '""')}","${email.cta?.replace(/"/g, '""') || ''}"\n`;
+      });
+    } else if (contentType === 'faq') {
+      csv = 'Number,Question,Answer\n';
+      content.faqs?.forEach((faq: any, i: number) => {
+        csv += `${i + 1},"${faq.question.replace(/"/g, '""')}","${faq.answer.replace(/"/g, '""')}"\n`;
+      });
+    } else {
+      csv = 'Content\n';
+      csv += `"${JSON.stringify(content).replace(/"/g, '""')}"\n`;
+    }
+
+    return csv;
   };
 
   const getStatusColor = (status: string) => {
@@ -296,14 +387,28 @@ const ProjectDetail = () => {
                               <Eye className="w-4 h-4 mr-2" />
                               Preview
                             </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleDownload(status.content_type)}
-                            >
-                              <Download className="w-4 h-4 mr-2" />
-                              Download
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                >
+                                  <Download className="w-4 h-4 mr-2" />
+                                  Download
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => handleDownload(status.content_type, 'json')}>
+                                  Download as JSON
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDownload(status.content_type, 'txt')}>
+                                  Download as TXT
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDownload(status.content_type, 'csv')}>
+                                  Download as CSV
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </>
                         )}
                         <Button
@@ -345,16 +450,28 @@ const ProjectDetail = () => {
 
       {/* Preview Dialog */}
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>
-              {contentTypeLabels[previewType] || previewType} Preview
+              {contentTypeLabels[previewType] || previewType}
             </DialogTitle>
           </DialogHeader>
           <div className="mt-4">
-            <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
-              {JSON.stringify(previewContent, null, 2)}
-            </pre>
+            {previewType === 'youtube' && previewContent && (
+              <YouTubePreview content={previewContent} />
+            )}
+            {previewType === 'instagram' && previewContent && (
+              <InstagramPreview content={previewContent} />
+            )}
+            {previewType === 'email' && previewContent && (
+              <EmailPreview content={previewContent} />
+            )}
+            {previewType === 'faq' && previewContent && (
+              <FAQPreview content={previewContent} />
+            )}
+            {previewType === 'chatbot' && previewContent && (
+              <ChatbotPreview content={previewContent} />
+            )}
           </div>
         </DialogContent>
       </Dialog>
