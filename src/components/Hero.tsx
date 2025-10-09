@@ -58,7 +58,7 @@ const Hero = () => {
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 animate-fade-up" style={{ animationDelay: "0.4s" }}>
             <div className="space-y-2">
-              <div className="text-4xl font-bold gradient-primary bg-clip-text text-transparent">60min</div>
+              <div className="text-4xl font-bold text-primary">60min</div>
               <div className="text-sm text-muted-foreground">Complete Launch Package</div>
             </div>
             <div className="space-y-2">
