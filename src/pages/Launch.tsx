@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { LaunchFormData } from "@/types/launch";
 import { launchFormSchema } from "@/lib/formSchema";
 import { Button } from "@/components/ui/button";
@@ -22,8 +23,30 @@ const stepLabels = ["Product", "Audience", "Brand", "Channels", "Support", "Cons
 
 const Launch = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Check authentication
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setUser(session.user);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setUser(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const form = useForm<LaunchFormData>({
     resolver: zodResolver(launchFormSchema),
@@ -124,15 +147,62 @@ const Launch = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleSubmit = form.handleSubmit((data) => {
-    console.log("Form submitted:", data);
-    toast({
-      title: "Launch Initiated! 🚀",
-      description: "We're generating your content. This may take a few minutes.",
-    });
-    localStorage.removeItem(STORAGE_KEY);
-    // TODO: Navigate to dashboard when Phase 2 is implemented
-    navigate("/");
+  const handleSubmit = form.handleSubmit(async (data) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to create a project.",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    try {
+      // Create project in database
+      const { data: project, error } = await supabase
+        .from("projects")
+        .insert([{
+          user_id: user.id,
+          name: data.product.name,
+          form_data: data as any,
+          status: "pending",
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Create initial generation status entries for selected channels
+      const statusEntries = [];
+      if (data.channels.youtube) statusEntries.push({ project_id: project.id, content_type: "youtube" });
+      if (data.channels.instagram) statusEntries.push({ project_id: project.id, content_type: "instagram" });
+      if (data.channels.email) statusEntries.push({ project_id: project.id, content_type: "email" });
+      if (data.channels.faq) statusEntries.push({ project_id: project.id, content_type: "faq" });
+      if (data.channels.chatbot) statusEntries.push({ project_id: project.id, content_type: "chatbot" });
+
+      if (statusEntries.length > 0) {
+        const { error: statusError } = await supabase
+          .from("generation_status")
+          .insert(statusEntries);
+
+        if (statusError) throw statusError;
+      }
+
+      toast({
+        title: "Launch Initiated! 🚀",
+        description: "Redirecting to your project dashboard...",
+      });
+      
+      localStorage.removeItem(STORAGE_KEY);
+      navigate(`/project/${project.id}`);
+    } catch (error: any) {
+      toast({
+        title: "Error Creating Project",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   });
 
   const renderStep = () => {

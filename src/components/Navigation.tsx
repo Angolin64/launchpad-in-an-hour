@@ -58,11 +58,18 @@ const Navigation = () => {
           </div>
 
           {/* CTA */}
-          <Link to="/launch">
-            <Button variant="hero">
-              Start Launch
-            </Button>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/dashboard">
+              <Button variant="ghost" size="sm">
+                Dashboard
+              </Button>
+            </Link>
+            <Link to="/launch">
+              <Button variant="hero">
+                Start Launch
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </nav>
