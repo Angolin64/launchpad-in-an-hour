@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, RefreshCw, Download, Rocket, Eye } from "lucide-react";
+import { ArrowLeft, RefreshCw, Download, Rocket, Eye, Palette } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -153,6 +153,50 @@ const ProjectDetail = () => {
     } catch (error: any) {
       toast({
         title: "Error loading preview",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCanvaExport = async (contentType: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('deliverables')
+        .select('content')
+        .eq('project_id', id)
+        .eq('content_type', contentType)
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: "Creating Canva design...",
+        description: "Opening Canva with your content",
+      });
+
+      const { data: canvaData, error: canvaError } = await supabase.functions.invoke('canva-export', {
+        body: {
+          contentType,
+          content: data.content,
+          projectName: project?.name || 'Untitled Project',
+        }
+      });
+
+      if (canvaError) throw canvaError;
+
+      if (canvaData?.editUrl) {
+        // Open Canva in a new tab
+        window.open(canvaData.editUrl, '_blank');
+        
+        toast({
+          title: "Design created!",
+          description: "Your Canva design has been opened in a new tab",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Canva export failed",
         description: error.message,
         variant: "destructive",
       });
@@ -409,6 +453,14 @@ const ProjectDetail = () => {
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleCanvaExport(status.content_type)}
+                            >
+                              <Palette className="w-4 h-4 mr-2" />
+                              Design in Canva
+                            </Button>
                           </>
                         )}
                         <Button
