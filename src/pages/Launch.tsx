@@ -195,6 +195,12 @@ const Launch = () => {
       });
       
       localStorage.removeItem(STORAGE_KEY);
+      
+      // Trigger content generation in the background
+      supabase.functions.invoke('generate-content', {
+        body: { projectId: project.id }
+      }).catch(err => console.error('Background generation error:', err));
+      
       navigate(`/project/${project.id}`);
     } catch (error: any) {
       toast({

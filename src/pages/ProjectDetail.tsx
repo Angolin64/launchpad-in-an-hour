@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, RefreshCw, Download, Rocket } from "lucide-react";
+import { ArrowLeft, RefreshCw, Download, Rocket, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface GenerationStatus {
   id: string;
@@ -31,6 +32,9 @@ const ProjectDetail = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [statuses, setStatuses] = useState<GenerationStatus[]>([]);
   const [loading, setLoading] = useState(true);
+  const [previewContent, setPreviewContent] = useState<any>(null);
+  const [previewType, setPreviewType] = useState<string>("");
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -38,6 +42,28 @@ const ProjectDetail = () => {
         navigate("/auth");
       } else {
         loadProjectData();
+        
+        // Set up realtime subscription for status updates
+        const channel = supabase
+          .channel('project-status-changes')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'generation_status',
+              filter: `project_id=eq.${id}`,
+            },
+            (payload) => {
+              console.log('Status update:', payload);
+              loadProjectData();
+            }
+          )
+          .subscribe();
+
+        return () => {
+          supabase.removeChannel(channel);
+        };
       }
     });
   }, [id, navigate]);
@@ -72,11 +98,94 @@ const ProjectDetail = () => {
   };
 
   const handleRegenerate = async (contentType: string) => {
-    toast({
-      title: "Regeneration started",
-      description: `Regenerating ${contentType} content...`,
-    });
-    // TODO: Implement regeneration logic in Phase 3
+    try {
+      // Update status to pending
+      await supabase
+        .from('generation_status')
+        .update({ 
+          status: 'pending', 
+          progress: 0, 
+          error_message: null 
+        })
+        .eq('project_id', id)
+        .eq('content_type', contentType);
+
+      // Trigger regeneration
+      const { error } = await supabase.functions.invoke('generate-content', {
+        body: { projectId: id }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Regeneration started",
+        description: `Regenerating ${contentType} content...`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePreview = async (contentType: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('deliverables')
+        .select('content')
+        .eq('project_id', id)
+        .eq('content_type', contentType)
+        .single();
+
+      if (error) throw error;
+
+      setPreviewContent(data.content);
+      setPreviewType(contentType);
+      setShowPreview(true);
+    } catch (error: any) {
+      toast({
+        title: "Error loading preview",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDownload = async (contentType: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('deliverables')
+        .select('content')
+        .eq('project_id', id)
+        .eq('content_type', contentType)
+        .single();
+
+      if (error) throw error;
+
+      // Create downloadable file
+      const blob = new Blob([JSON.stringify(data.content, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${contentType}-content.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Download started",
+        description: `${contentType} content downloaded successfully`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error downloading",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -178,15 +287,30 @@ const ProjectDetail = () => {
                           {status.status}
                         </Badge>
                         {status.status === "complete" && (
-                          <Button variant="outline" size="sm">
-                            <Download className="w-4 h-4 mr-2" />
-                            Download
-                          </Button>
+                          <>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handlePreview(status.content_type)}
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              Preview
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleDownload(status.content_type)}
+                            >
+                              <Download className="w-4 h-4 mr-2" />
+                              Download
+                            </Button>
+                          </>
                         )}
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleRegenerate(status.content_type)}
+                          disabled={status.status === 'processing'}
                         >
                           <RefreshCw className="w-4 h-4" />
                         </Button>
@@ -218,6 +342,22 @@ const ProjectDetail = () => {
           )}
         </div>
       </div>
+
+      {/* Preview Dialog */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {contentTypeLabels[previewType] || previewType} Preview
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+              {JSON.stringify(previewContent, null, 2)}
+            </pre>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
