@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Rocket } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Navigation = () => {
   return (
@@ -31,9 +32,11 @@ const Navigation = () => {
           </div>
 
           {/* CTA */}
-          <Button variant="hero">
-            Start Launch
-          </Button>
+          <Link to="/launch">
+            <Button variant="hero">
+              Start Launch
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>
