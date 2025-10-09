@@ -34,7 +34,7 @@ const Hero = () => {
           <h1 className="animate-fade-up" style={{ animationDelay: "0.1s" }}>
             From Idea to Launch
             <br />
-            <span className="gradient-primary bg-clip-text text-transparent">
+            <span className="text-primary font-bold">
               In One Hour
             </span>
           </h1>
