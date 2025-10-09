@@ -62,7 +62,7 @@ const Hero = () => {
               <div className="text-sm text-muted-foreground">Complete Launch Package</div>
             </div>
             <div className="space-y-2">
-              <div className="text-4xl font-bold gradient-primary bg-clip-text text-transparent">5+</div>
+              <div className="text-4xl font-bold text-primary">5+</div>
               <div className="text-sm text-muted-foreground">Marketing Channels</div>
             </div>
             <div className="space-y-2">
