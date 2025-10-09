@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, RefreshCw, Download, Rocket, Eye, Palette } from "lucide-react";
+import { ArrowLeft, RefreshCw, Download, Rocket, Eye, Palette, Code } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -41,6 +41,7 @@ const ProjectDetail = () => {
   const [previewContent, setPreviewContent] = useState<any>(null);
   const [previewType, setPreviewType] = useState<string>("");
   const [showPreview, setShowPreview] = useState(false);
+  const [showEmbedCode, setShowEmbedCode] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -201,6 +202,25 @@ const ProjectDetail = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const getEmbedCode = () => {
+    const embedUrl = `${window.location.origin}/chatbot-embed?projectId=${id}`;
+    return `<!-- Chatbot Embed Code -->
+<iframe 
+  src="${embedUrl}"
+  style="position: fixed; bottom: 0; right: 0; width: 100%; height: 100%; border: none; z-index: 9999;"
+  allow="microphone"
+></iframe>`;
+  };
+
+  const copyEmbedCode = () => {
+    const code = getEmbedCode();
+    navigator.clipboard.writeText(code);
+    toast({
+      title: "Copied!",
+      description: "Embed code copied to clipboard",
+    });
   };
 
   const handleDownload = async (contentType: string, format: 'json' | 'txt' | 'csv') => {
@@ -461,6 +481,16 @@ const ProjectDetail = () => {
                               <Palette className="w-4 h-4 mr-2" />
                               Design in Canva
                             </Button>
+                            {status.content_type === 'chatbot' && (
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setShowEmbedCode(true)}
+                              >
+                                <Code className="w-4 h-4 mr-2" />
+                                Get Embed Code
+                              </Button>
+                            )}
                           </>
                         )}
                         <Button
@@ -524,6 +554,42 @@ const ProjectDetail = () => {
             {previewType === 'chatbot' && previewContent && (
               <ChatbotPreview content={previewContent} />
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Embed Code Dialog */}
+      <Dialog open={showEmbedCode} onOpenChange={setShowEmbedCode}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Chatbot Embed Code</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Copy and paste this code into your website to embed the chatbot:
+            </p>
+            <div className="relative">
+              <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+                <code>{getEmbedCode()}</code>
+              </pre>
+              <Button
+                size="sm"
+                onClick={copyEmbedCode}
+                className="absolute top-2 right-2"
+              >
+                Copy Code
+              </Button>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Preview your chatbot:</p>
+              <Button
+                variant="outline"
+                onClick={() => window.open(`/chatbot-embed?projectId=${id}`, '_blank')}
+                className="w-full"
+              >
+                Open Preview
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
