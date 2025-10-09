@@ -81,7 +81,7 @@ const Pricing = () => {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-bold gradient-primary bg-clip-text text-transparent">
+                  <span className="text-5xl font-bold text-primary">
                     {plan.price}
                   </span>
                   <span className="text-muted-foreground">{plan.period}</span>
