@@ -42,7 +42,7 @@ const plans = [
 
 const Pricing = () => {
   return (
-    <section className="py-24 px-4 relative">
+    <section id="pricing" className="py-24 px-4 relative scroll-mt-24">
       <div className="container mx-auto max-w-6xl">
         {/* Section header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
