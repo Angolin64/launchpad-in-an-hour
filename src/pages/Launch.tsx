@@ -147,6 +147,67 @@ const Launch = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
+  const clearCurrentStep = () => {
+    const defaultValues = {
+      product: {
+        name: "",
+        description: "",
+        price: "",
+        features: [],
+        differentiators: "",
+      },
+      audience: {
+        niche: "",
+        painPoints: [],
+        goals: [],
+        language: "",
+        objections: [],
+      },
+      brand: {
+        tone: "professional" as const,
+        primaryColor: "#6B46C1",
+        secondaryColor: "#38B2AC",
+        accentColor: "#ED8936",
+        fonts: "",
+        logoUrl: "",
+      },
+      channels: {
+        youtube: false,
+        instagram: false,
+        email: false,
+        faq: false,
+        chatbot: false,
+      },
+      support: {
+        policies: "",
+        pricingDetails: "",
+        onboardingSteps: [],
+        tutorialLinks: [],
+      },
+      consent: {
+        aiTrainingConsent: false,
+      },
+    };
+
+    const stepFields: Record<number, keyof LaunchFormData> = {
+      0: "product",
+      1: "audience",
+      2: "brand",
+      3: "channels",
+      4: "support",
+      5: "consent",
+    };
+
+    const field = stepFields[currentStep];
+    if (field) {
+      form.setValue(field, defaultValues[field] as any);
+      toast({
+        title: "Step Cleared",
+        description: "All fields in this step have been reset.",
+      });
+    }
+  };
+
   const handleSubmit = form.handleSubmit(async (data) => {
     if (!user) {
       toast({
@@ -214,17 +275,17 @@ const Launch = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        return <StepProduct form={form} />;
+        return <StepProduct form={form} onClear={clearCurrentStep} />;
       case 1:
-        return <StepAudience form={form} />;
+        return <StepAudience form={form} onClear={clearCurrentStep} />;
       case 2:
-        return <StepBrand form={form} />;
+        return <StepBrand form={form} onClear={clearCurrentStep} />;
       case 3:
-        return <StepChannels form={form} />;
+        return <StepChannels form={form} onClear={clearCurrentStep} />;
       case 4:
-        return <StepSupport form={form} />;
+        return <StepSupport form={form} onClear={clearCurrentStep} />;
       case 5:
-        return <StepConsent form={form} />;
+        return <StepConsent form={form} onClear={clearCurrentStep} />;
       case 6:
         return <StepReview form={form} onEditStep={setCurrentStep} />;
       default:

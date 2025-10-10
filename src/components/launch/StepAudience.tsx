@@ -3,14 +3,15 @@ import { LaunchFormData } from "@/types/launch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface StepAudienceProps {
   form: UseFormReturn<LaunchFormData>;
+  onClear: () => void;
 }
 
-export const StepAudience = ({ form }: StepAudienceProps) => {
+export const StepAudience = ({ form, onClear }: StepAudienceProps) => {
   const [painPointInput, setPainPointInput] = useState("");
   const [goalInput, setGoalInput] = useState("");
   const [objectionInput, setObjectionInput] = useState("");
@@ -37,9 +38,15 @@ export const StepAudience = ({ form }: StepAudienceProps) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Target Audience</h2>
-        <p className="text-muted-foreground">Help us understand who you're serving</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Target Audience</h2>
+          <p className="text-muted-foreground">Help us understand who you're serving</p>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={onClear}>
+          <Trash2 className="w-4 h-4 mr-2" />
+          Clear
+        </Button>
       </div>
 
       <div className="space-y-6">

@@ -2,18 +2,27 @@ import { UseFormReturn } from "react-hook-form";
 import { LaunchFormData } from "@/types/launch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Trash2 } from "lucide-react";
 
 interface StepBrandProps {
   form: UseFormReturn<LaunchFormData>;
+  onClear: () => void;
 }
 
-export const StepBrand = ({ form }: StepBrandProps) => {
+export const StepBrand = ({ form, onClear }: StepBrandProps) => {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Brand Identity</h2>
-        <p className="text-muted-foreground">Define your brand's look and feel</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Brand Identity</h2>
+          <p className="text-muted-foreground">Define your brand's look and feel</p>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={onClear}>
+          <Trash2 className="w-4 h-4 mr-2" />
+          Clear
+        </Button>
       </div>
 
       <div className="space-y-4">

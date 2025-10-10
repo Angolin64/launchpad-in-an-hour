@@ -1,14 +1,16 @@
 import { UseFormReturn } from "react-hook-form";
 import { LaunchFormData } from "@/types/launch";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Youtube, Instagram, Mail, HelpCircle, MessageCircle } from "lucide-react";
+import { Youtube, Instagram, Mail, HelpCircle, MessageCircle, Trash2 } from "lucide-react";
 
 interface StepChannelsProps {
   form: UseFormReturn<LaunchFormData>;
+  onClear: () => void;
 }
 
-export const StepChannels = ({ form }: StepChannelsProps) => {
+export const StepChannels = ({ form, onClear }: StepChannelsProps) => {
   const channels = [
     {
       id: "youtube",
@@ -44,9 +46,15 @@ export const StepChannels = ({ form }: StepChannelsProps) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Content Channels</h2>
-        <p className="text-muted-foreground">Select the channels you want to launch with</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Content Channels</h2>
+          <p className="text-muted-foreground">Select the channels you want to launch with</p>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={onClear}>
+          <Trash2 className="w-4 h-4 mr-2" />
+          Clear
+        </Button>
       </div>
 
       <div className="space-y-4">

@@ -4,14 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface StepSupportProps {
   form: UseFormReturn<LaunchFormData>;
+  onClear: () => void;
 }
 
-export const StepSupport = ({ form }: StepSupportProps) => {
+export const StepSupport = ({ form, onClear }: StepSupportProps) => {
   const [stepInput, setStepInput] = useState("");
   const [linkInput, setLinkInput] = useState("");
 
@@ -36,9 +37,15 @@ export const StepSupport = ({ form }: StepSupportProps) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Support Data</h2>
-        <p className="text-muted-foreground">Help us create comprehensive support content</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Support Data</h2>
+          <p className="text-muted-foreground">Help us create comprehensive support content</p>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={onClear}>
+          <Trash2 className="w-4 h-4 mr-2" />
+          Clear
+        </Button>
       </div>
 
       <div className="space-y-6">

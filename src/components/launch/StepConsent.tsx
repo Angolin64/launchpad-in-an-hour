@@ -1,19 +1,27 @@
 import { UseFormReturn } from "react-hook-form";
 import { LaunchFormData } from "@/types/launch";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Shield } from "lucide-react";
+import { Shield, Trash2 } from "lucide-react";
 
 interface StepConsentProps {
   form: UseFormReturn<LaunchFormData>;
+  onClear: () => void;
 }
 
-export const StepConsent = ({ form }: StepConsentProps) => {
+export const StepConsent = ({ form, onClear }: StepConsentProps) => {
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Final Step: Consent</h2>
-        <p className="text-muted-foreground">We need your permission to generate content</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Final Step: Consent</h2>
+          <p className="text-muted-foreground">We need your permission to generate content</p>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={onClear}>
+          <Trash2 className="w-4 h-4 mr-2" />
+          Clear
+        </Button>
       </div>
 
       <div className="p-6 rounded-lg border-2 border-border bg-muted/30">
