@@ -64,7 +64,8 @@ export const StepChannels = ({ form, onClear }: StepChannelsProps) => {
             <div
               key={channel.id}
               className="flex items-start space-x-4 p-4 rounded-lg border border-border hover:border-primary transition-smooth cursor-pointer"
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
                 const currentValue = form.getValues(`channels.${channel.id as keyof LaunchFormData["channels"]}`);
                 form.setValue(`channels.${channel.id as keyof LaunchFormData["channels"]}`, !currentValue);
               }}
@@ -74,6 +75,7 @@ export const StepChannels = ({ form, onClear }: StepChannelsProps) => {
                 onCheckedChange={(checked) => {
                   form.setValue(`channels.${channel.id as keyof LaunchFormData["channels"]}`, checked as boolean);
                 }}
+                onClick={(e) => e.stopPropagation()}
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
