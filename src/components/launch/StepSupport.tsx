@@ -98,7 +98,7 @@ export const StepSupport = ({ form }: StepSupportProps) => {
           </div>
           {form.formState.errors.support?.onboardingSteps && (
             <p className="text-sm text-destructive mt-1">
-              {form.formState.errors.support.onboardingSteps.message}
+              {String(form.formState.errors.support.onboardingSteps.message || "At least one onboarding step is required")}
             </p>
           )}
         </div>
@@ -132,7 +132,7 @@ export const StepSupport = ({ form }: StepSupportProps) => {
           </div>
           {form.formState.errors.support?.tutorialLinks && (
             <p className="text-sm text-destructive mt-1">
-              {form.formState.errors.support.tutorialLinks.message}
+              {String(form.formState.errors.support.tutorialLinks.message || "Invalid tutorial links")}
             </p>
           )}
         </div>

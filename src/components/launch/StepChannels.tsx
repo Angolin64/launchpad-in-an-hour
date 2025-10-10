@@ -79,7 +79,7 @@ export const StepChannels = ({ form }: StepChannelsProps) => {
         })}
         {form.formState.errors.channels && (
           <p className="text-sm text-destructive mt-2">
-            {form.formState.errors.channels.root?.message}
+            {String(form.formState.errors.channels.root?.message || form.formState.errors.channels.message || "At least one channel must be selected")}
           </p>
         )}
       </div>

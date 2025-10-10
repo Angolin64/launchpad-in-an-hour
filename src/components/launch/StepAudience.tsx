@@ -83,7 +83,7 @@ export const StepAudience = ({ form }: StepAudienceProps) => {
           </div>
           {form.formState.errors.audience?.painPoints && (
             <p className="text-sm text-destructive mt-1">
-              {form.formState.errors.audience.painPoints.message}
+              {String(form.formState.errors.audience.painPoints.message || "At least one pain point is required")}
             </p>
           )}
         </div>
@@ -114,7 +114,7 @@ export const StepAudience = ({ form }: StepAudienceProps) => {
           </div>
           {form.formState.errors.audience?.goals && (
             <p className="text-sm text-destructive mt-1">
-              {form.formState.errors.audience.goals.message}
+              {String(form.formState.errors.audience.goals.message || "At least one goal is required")}
             </p>
           )}
         </div>
@@ -159,7 +159,7 @@ export const StepAudience = ({ form }: StepAudienceProps) => {
           </div>
           {form.formState.errors.audience?.objections && (
             <p className="text-sm text-destructive mt-1">
-              {form.formState.errors.audience.objections.message}
+              {String(form.formState.errors.audience.objections.message || "At least one objection is required")}
             </p>
           )}
         </div>

@@ -114,7 +114,7 @@ export const StepProduct = ({ form }: StepProductProps) => {
           </div>
           {form.formState.errors.product?.features && (
             <p className="text-sm text-destructive mt-1">
-              {form.formState.errors.product.features.message}
+              {String(form.formState.errors.product.features.message || "At least one feature is required")}
             </p>
           )}
         </div>
