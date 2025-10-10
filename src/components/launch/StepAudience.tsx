@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { AIHelperButton } from "./AIHelperButton";
 
 interface StepAudienceProps {
   form: UseFormReturn<LaunchFormData>;
@@ -19,6 +20,9 @@ export const StepAudience = ({ form, onClear }: StepAudienceProps) => {
   const painPoints = form.watch("audience.painPoints") || [];
   const goals = form.watch("audience.goals") || [];
   const objections = form.watch("audience.objections") || [];
+  const audienceNiche = form.watch("audience.niche") || "";
+  const productName = form.watch("product.name") || "";
+  const productDescription = form.watch("product.description") || "";
 
   const addItem = (field: "painPoints" | "goals" | "objections", value: string, setter: (v: string) => void) => {
     if (value.trim()) {
@@ -51,7 +55,14 @@ export const StepAudience = ({ form, onClear }: StepAudienceProps) => {
 
       <div className="space-y-6">
         <div>
-          <Label htmlFor="audience-niche">Niche / Industry *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="audience-niche">Niche / Industry *</Label>
+            <AIHelperButton
+              fieldType="audienceDescription"
+              context={`Product: ${productName}. Description: ${productDescription}`}
+              onSuggestion={(suggestion) => form.setValue("audience.niche", suggestion)}
+            />
+          </div>
           <Input
             id="audience-niche"
             placeholder="e.g., SaaS founders, E-commerce brands"

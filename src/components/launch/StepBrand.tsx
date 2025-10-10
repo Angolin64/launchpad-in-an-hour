@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
+import { AIHelperButton } from "./AIHelperButton";
 
 interface StepBrandProps {
   form: UseFormReturn<LaunchFormData>;
@@ -12,6 +13,10 @@ interface StepBrandProps {
 }
 
 export const StepBrand = ({ form, onClear }: StepBrandProps) => {
+  const productName = form.watch("product.name") || "";
+  const audienceNiche = form.watch("audience.niche") || "";
+  const brandTone = form.watch("brand.tone") || "";
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -27,7 +32,21 @@ export const StepBrand = ({ form, onClear }: StepBrandProps) => {
 
       <div className="space-y-4">
         <div>
-          <Label htmlFor="brand-tone">Tone of Voice *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="brand-tone">Tone of Voice *</Label>
+            <AIHelperButton
+              fieldType="brandTone"
+              context={`Product: ${productName}. Target audience: ${audienceNiche}`}
+              onSuggestion={(suggestion) => {
+                const tone = suggestion.toLowerCase().includes("professional") ? "professional" :
+                             suggestion.toLowerCase().includes("casual") ? "casual" :
+                             suggestion.toLowerCase().includes("friendly") ? "friendly" :
+                             suggestion.toLowerCase().includes("authoritative") ? "authoritative" :
+                             suggestion.toLowerCase().includes("playful") ? "playful" : "professional";
+                form.setValue("brand.tone", tone as any);
+              }}
+            />
+          </div>
           <Select
             value={form.watch("brand.tone")}
             onValueChange={(value) => form.setValue("brand.tone", value as any)}
@@ -119,7 +138,14 @@ export const StepBrand = ({ form, onClear }: StepBrandProps) => {
         </div>
 
         <div>
-          <Label htmlFor="brand-fonts">Font Family *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="brand-fonts">Font Family *</Label>
+            <AIHelperButton
+              fieldType="brandFonts"
+              context={`Brand tone: ${brandTone}`}
+              onSuggestion={(suggestion) => form.setValue("brand.fonts", suggestion)}
+            />
+          </div>
           <Input
             id="brand-fonts"
             placeholder="e.g., Inter, Roboto, Open Sans"

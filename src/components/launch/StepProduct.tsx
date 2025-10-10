@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { AIHelperButton } from "./AIHelperButton";
 
 interface StepProductProps {
   form: UseFormReturn<LaunchFormData>;
@@ -15,6 +16,8 @@ interface StepProductProps {
 export const StepProduct = ({ form, onClear }: StepProductProps) => {
   const [featureInput, setFeatureInput] = useState("");
   const features = form.watch("product.features") || [];
+  const productName = form.watch("product.name") || "";
+  const productDescription = form.watch("product.description") || "";
 
   const addFeature = () => {
     if (featureInput.trim()) {
@@ -45,7 +48,13 @@ export const StepProduct = ({ form, onClear }: StepProductProps) => {
 
       <div className="space-y-4">
         <div>
-          <Label htmlFor="product-name">Product Name *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="product-name">Product Name *</Label>
+            <AIHelperButton
+              fieldType="productName"
+              onSuggestion={(suggestion) => form.setValue("product.name", suggestion)}
+            />
+          </div>
           <Input
             id="product-name"
             placeholder="e.g., LaunchKit Pro"
@@ -59,7 +68,14 @@ export const StepProduct = ({ form, onClear }: StepProductProps) => {
         </div>
 
         <div>
-          <Label htmlFor="product-description">Description *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="product-description">Description *</Label>
+            <AIHelperButton
+              fieldType="productDescription"
+              context={productName}
+              onSuggestion={(suggestion) => form.setValue("product.description", suggestion)}
+            />
+          </div>
           <Textarea
             id="product-description"
             placeholder="Describe what your product does and who it's for..."
@@ -74,7 +90,14 @@ export const StepProduct = ({ form, onClear }: StepProductProps) => {
         </div>
 
         <div>
-          <Label htmlFor="product-price">Price *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="product-price">Price *</Label>
+            <AIHelperButton
+              fieldType="productPrice"
+              context={productDescription}
+              onSuggestion={(suggestion) => form.setValue("product.price", suggestion)}
+            />
+          </div>
           <Input
             id="product-price"
             placeholder="e.g., $249 one-time or $29/month"
@@ -88,7 +111,17 @@ export const StepProduct = ({ form, onClear }: StepProductProps) => {
         </div>
 
         <div>
-          <Label htmlFor="product-features">Key Features *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="product-features">Key Features *</Label>
+            <AIHelperButton
+              fieldType="productFeatures"
+              context={productDescription}
+              onSuggestion={(suggestion) => {
+                const featuresArray = suggestion.split('\n').filter(f => f.trim());
+                form.setValue("product.features", featuresArray);
+              }}
+            />
+          </div>
           <div className="flex gap-2 mb-2">
             <Input
               id="product-features"
@@ -127,7 +160,14 @@ export const StepProduct = ({ form, onClear }: StepProductProps) => {
         </div>
 
         <div>
-          <Label htmlFor="product-differentiators">What Makes You Different? *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="product-differentiators">What Makes You Different? *</Label>
+            <AIHelperButton
+              fieldType="productDifferentiators"
+              context={`Product: ${productName}. Description: ${productDescription}`}
+              onSuggestion={(suggestion) => form.setValue("product.differentiators", suggestion)}
+            />
+          </div>
           <Textarea
             id="product-differentiators"
             placeholder="What sets you apart from competitors?"

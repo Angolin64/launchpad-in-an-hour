@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { AIHelperButton } from "./AIHelperButton";
 
 interface StepSupportProps {
   form: UseFormReturn<LaunchFormData>;
@@ -18,6 +19,9 @@ export const StepSupport = ({ form, onClear }: StepSupportProps) => {
 
   const onboardingSteps = form.watch("support.onboardingSteps") || [];
   const tutorialLinks = form.watch("support.tutorialLinks") || [];
+  const productName = form.watch("product.name") || "";
+  const productDescription = form.watch("product.description") || "";
+  const productPrice = form.watch("product.price") || "";
 
   const addItem = (field: "onboardingSteps" | "tutorialLinks", value: string, setter: (v: string) => void) => {
     if (value.trim()) {
@@ -50,7 +54,14 @@ export const StepSupport = ({ form, onClear }: StepSupportProps) => {
 
       <div className="space-y-6">
         <div>
-          <Label htmlFor="support-policies">Policies & Terms *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="support-policies">Policies & Terms *</Label>
+            <AIHelperButton
+              fieldType="supportGreeting"
+              context={`Product: ${productName}`}
+              onSuggestion={(suggestion) => form.setValue("support.policies", suggestion)}
+            />
+          </div>
           <Textarea
             id="support-policies"
             placeholder="Refund policy, terms of service, privacy policy highlights..."
@@ -65,7 +76,14 @@ export const StepSupport = ({ form, onClear }: StepSupportProps) => {
         </div>
 
         <div>
-          <Label htmlFor="support-pricing">Pricing Details *</Label>
+          <div className="flex items-center">
+            <Label htmlFor="support-pricing">Pricing Details *</Label>
+            <AIHelperButton
+              fieldType="faqQuestions"
+              context={`Product: ${productName}. Price: ${productPrice}. Description: ${productDescription}`}
+              onSuggestion={(suggestion) => form.setValue("support.pricingDetails", suggestion)}
+            />
+          </div>
           <Textarea
             id="support-pricing"
             placeholder="Explain your pricing structure, plans, what's included..."
