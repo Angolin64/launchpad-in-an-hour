@@ -52,6 +52,7 @@ export const StepProduct = ({ form, onClear }: StepProductProps) => {
             <Label htmlFor="product-name">Product Name *</Label>
             <AIHelperButton
               fieldType="productName"
+              context={{}}
               onSuggestion={(suggestion) => form.setValue("product.name", suggestion)}
             />
           </div>
