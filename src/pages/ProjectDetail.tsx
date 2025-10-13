@@ -396,7 +396,7 @@ const ProjectDetail = () => {
               Back to Dashboard
             </Link>
             <Link to="/" className="flex items-center gap-2">
-              <img src="/src/assets/launchin60.png" alt="Launchin60" className="h-8" />
+              <img src="/src/assets/launchin60.png" alt="Launchin60" className="h-32" />
             </Link>
           </div>
         </div>

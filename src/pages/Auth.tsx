@@ -180,7 +180,7 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <img src="/src/assets/launchin60.png" alt="Launchin60" className="h-10" />
+            <img src="/src/assets/launchin60.png" alt="Launchin60" className="h-32" />
           </Link>
           <p className="text-muted-foreground mt-2">Sign in to manage your launch projects</p>
         </div>
