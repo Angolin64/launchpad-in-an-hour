@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from "@/hooks/use-toast";
 import { Rocket } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo from "@/assets/launchin60.png";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -180,7 +181,7 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <img src="/src/assets/launchin60.png" alt="Launchin60" className="h-32" />
+            <img src={logo} alt="Launchin60" className="h-32" />
           </Link>
           <p className="text-muted-foreground mt-2">Sign in to manage your launch projects</p>
         </div>
