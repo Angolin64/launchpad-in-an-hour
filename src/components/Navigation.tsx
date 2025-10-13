@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Rocket } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import logo from "@/assets/launchin60.png";
 
 const Navigation = () => {
   const location = useLocation();
@@ -23,10 +23,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-              <Rocket className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-xl">CreatorLaunch</span>
+            <img src={logo} alt="Launchin60" className="h-8" />
           </Link>
 
           {/* Nav links - hidden on mobile */}

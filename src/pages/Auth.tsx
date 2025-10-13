@@ -180,10 +180,7 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center">
-              <Rocket className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-2xl">CreatorLaunch</span>
+            <img src="/src/assets/launchin60.png" alt="Launchin60" className="h-10" />
           </Link>
           <p className="text-muted-foreground mt-2">Sign in to manage your launch projects</p>
         </div>

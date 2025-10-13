@@ -396,10 +396,7 @@ const ProjectDetail = () => {
               Back to Dashboard
             </Link>
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                <Rocket className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-xl">CreatorLaunch</span>
+              <img src="/src/assets/launchin60.png" alt="Launchin60" className="h-8" />
             </Link>
           </div>
         </div>

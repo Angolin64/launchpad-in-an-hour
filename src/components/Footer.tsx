@@ -1,4 +1,5 @@
-import { Rocket } from "lucide-react";
+import { Link } from "react-router-dom";
+import logo from "@/assets/launchin60.png";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -10,10 +11,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                <Rocket className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-xl">CreatorLaunch</span>
+              <img src={logo} alt="Launchin60" className="h-8" />
             </div>
             <p className="text-sm text-muted-foreground">
               Launch your product in under 60 minutes with AI-powered marketing packages.
@@ -57,7 +55,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} CreatorLaunch. All rights reserved.
+            © {currentYear} Launchin60. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <a href="#twitter" className="text-sm text-muted-foreground hover:text-foreground transition-smooth">
