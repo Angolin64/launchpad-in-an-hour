@@ -23,7 +23,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Launchin60" className="h-50" />
+            <img src={logo} alt="Launchin60" className="h-20" />
           </Link>
 
           {/* Nav links - hidden on mobile */}
