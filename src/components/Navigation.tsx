@@ -19,11 +19,11 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/50">
-      <div className="container mx-auto px-4 h-28 flex items-center">
+      <div className="container mx-auto px-4 h-30 flex items-center">
         <div className="flex items-center justify-between w-full">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Launchin60" className="h-24 object-contain" />
+            <img src={logo} alt="Launchin60" className="h-28 object-contain" />
           </Link>
 
           {/* Nav links - hidden on mobile */}
