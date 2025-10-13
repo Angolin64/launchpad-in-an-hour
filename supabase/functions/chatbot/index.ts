@@ -27,6 +27,13 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Load chatbot configuration
+    const { data: config } = await supabase
+      .from('chatbot_config')
+      .select('*')
+      .eq('project_id', projectId)
+      .maybeSingle();
+
     // Fetch the chatbot knowledge base
     const { data: deliverable, error: deliverableError } = await supabase
       .from('deliverables')
@@ -41,9 +48,9 @@ serve(async (req) => {
     }
 
     const knowledgeBase = deliverable.content;
-    console.log('Knowledge base loaded:', knowledgeBase);
+    console.log('Knowledge base loaded');
 
-    // Build system prompt from knowledge base
+    // Build system prompt from knowledge base and config
     let systemPrompt = `You are a helpful AI assistant for the product/service described below.\n\n`;
     
     if (knowledgeBase.greeting) {
@@ -61,8 +68,9 @@ serve(async (req) => {
       });
     }
 
+    const responseStyle = config?.response_style || 'friendly';
     systemPrompt += `\nInstructions:
-- Be helpful, friendly, and concise
+- Be ${responseStyle} in your responses
 - Use the product information and common questions above to answer user queries
 - If you don't know something, be honest about it
 - Keep responses clear and actionable
@@ -80,6 +88,10 @@ serve(async (req) => {
       { role: 'user', content: message }
     ];
 
+    const aiModel = config?.ai_model || 'google/gemini-2.5-flash';
+    const temperature = config?.temperature || 0.7;
+    const maxTokens = config?.max_tokens || 500;
+
     // Call Lovable AI
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -88,9 +100,10 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: aiModel,
         messages: messages,
-        temperature: 0.7,
+        temperature: temperature,
+        max_tokens: maxTokens,
       }),
     });
 

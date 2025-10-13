@@ -49,6 +49,92 @@ export type Database = {
           },
         ]
       }
+      chatbot_config: {
+        Row: {
+          ai_model: string | null
+          auto_open: boolean | null
+          auto_speak_responses: boolean | null
+          bot_avatar_url: string | null
+          bot_name: string | null
+          chat_bubble_size: string | null
+          company_logo_url: string | null
+          company_name: string | null
+          conversation_memory_enabled: boolean | null
+          created_at: string
+          file_upload_enabled: boolean | null
+          greeting_message: string | null
+          id: string
+          max_tokens: number | null
+          position: string | null
+          project_id: string
+          response_style: string | null
+          show_typing_indicator: boolean | null
+          temperature: number | null
+          theme_color: string | null
+          updated_at: string
+          voice_enabled: boolean | null
+          voice_name: string | null
+        }
+        Insert: {
+          ai_model?: string | null
+          auto_open?: boolean | null
+          auto_speak_responses?: boolean | null
+          bot_avatar_url?: string | null
+          bot_name?: string | null
+          chat_bubble_size?: string | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          conversation_memory_enabled?: boolean | null
+          created_at?: string
+          file_upload_enabled?: boolean | null
+          greeting_message?: string | null
+          id?: string
+          max_tokens?: number | null
+          position?: string | null
+          project_id: string
+          response_style?: string | null
+          show_typing_indicator?: boolean | null
+          temperature?: number | null
+          theme_color?: string | null
+          updated_at?: string
+          voice_enabled?: boolean | null
+          voice_name?: string | null
+        }
+        Update: {
+          ai_model?: string | null
+          auto_open?: boolean | null
+          auto_speak_responses?: boolean | null
+          bot_avatar_url?: string | null
+          bot_name?: string | null
+          chat_bubble_size?: string | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          conversation_memory_enabled?: boolean | null
+          created_at?: string
+          file_upload_enabled?: boolean | null
+          greeting_message?: string | null
+          id?: string
+          max_tokens?: number | null
+          position?: string | null
+          project_id?: string
+          response_style?: string | null
+          show_typing_indicator?: boolean | null
+          temperature?: number | null
+          theme_color?: string | null
+          updated_at?: string
+          voice_enabled?: boolean | null
+          voice_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_project"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deliverables: {
         Row: {
           content: Json
