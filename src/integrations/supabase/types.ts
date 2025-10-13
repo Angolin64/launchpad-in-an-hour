@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_chat_sessions: {
+        Row: {
+          created_at: string
+          customer_email: string | null
+          id: string
+          project_id: string
+          thread_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email?: string | null
+          id?: string
+          project_id: string
+          thread_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string | null
+          id?: string
+          project_id?: string
+          thread_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_chat_sessions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deliverables: {
         Row: {
           content: Json
@@ -99,32 +134,79 @@ export type Database = {
       projects: {
         Row: {
           created_at: string
+          description: string | null
           form_data: Json
           id: string
           name: string
           status: string
           updated_at: string
           user_id: string
+          vector_store_id: string | null
         }
         Insert: {
           created_at?: string
+          description?: string | null
           form_data: Json
           id?: string
           name: string
           status?: string
           updated_at?: string
           user_id: string
+          vector_store_id?: string | null
         }
         Update: {
           created_at?: string
+          description?: string | null
           form_data?: Json
           id?: string
           name?: string
           status?: string
           updated_at?: string
           user_id?: string
+          vector_store_id?: string | null
         }
         Relationships: []
+      }
+      social_media_content: {
+        Row: {
+          content_type: string | null
+          content_url: string
+          created_at: string
+          id: string
+          platform: string
+          project_id: string
+          scrape_data: Json | null
+          scraped_at: string
+        }
+        Insert: {
+          content_type?: string | null
+          content_url: string
+          created_at?: string
+          id?: string
+          platform: string
+          project_id: string
+          scrape_data?: Json | null
+          scraped_at?: string
+        }
+        Update: {
+          content_type?: string | null
+          content_url?: string
+          created_at?: string
+          id?: string
+          platform?: string
+          project_id?: string
+          scrape_data?: Json | null
+          scraped_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_media_content_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

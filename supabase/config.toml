@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.ai-helper-chat]
 verify_jwt = false
+
+[functions.ai-customer-service]
+verify_jwt = false
+
+[functions.scrape-social-media]
+verify_jwt = true
