@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, LogOut, Rocket } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import logo from "@/assets/launchin60.png";
 
 interface Project {
   id: string;
@@ -90,7 +91,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/src/assets/launchin60.png" alt="Launchin60" className="h-32" />
+              <img src={logo} alt="Launchin60" className="h-32" />
             </Link>
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground">{user?.email}</span>

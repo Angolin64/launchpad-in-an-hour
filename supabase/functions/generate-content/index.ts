@@ -274,6 +274,32 @@ Format as JSON with: { productInfo, commonQueries: [{ query, response, tags }], 
             content: parsedContent,
           });
 
+        // If chatbot content, auto-create chatbot_config with defaults from form data
+        if (contentType === 'chatbot') {
+          const { data: existingConfig } = await supabaseServiceClient
+            .from('chatbot_config')
+            .select('id')
+            .eq('project_id', projectId)
+            .maybeSingle();
+
+          if (!existingConfig) {
+            await supabaseServiceClient
+              .from('chatbot_config')
+              .insert({
+                project_id: projectId,
+                theme_color: formData.brand?.color || '#8B5CF6',
+                bot_name: `${formData.product?.name || 'AI'} Assistant`,
+                greeting_message: parsedContent.greeting || 'Hello! How can I help you today?',
+                response_style: formData.brand?.tone?.toLowerCase() || 'friendly',
+                ai_model: 'google/gemini-2.5-flash',
+                temperature: 0.7,
+                max_tokens: 500,
+                conversation_memory_enabled: true,
+              });
+            console.log('✓ Created default chatbot configuration');
+          }
+        }
+
         // Mark as complete
         await supabaseServiceClient
           .from('generation_status')

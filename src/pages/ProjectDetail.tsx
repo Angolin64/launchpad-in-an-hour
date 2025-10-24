@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, RefreshCw, Download, Rocket, Eye, Palette, Code } from "lucide-react";
+import { ArrowLeft, RefreshCw, Download, Rocket, Eye, Palette, Code, Settings as SettingsIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -14,6 +14,8 @@ import { InstagramPreview } from "@/components/preview/InstagramPreview";
 import { EmailPreview } from "@/components/preview/EmailPreview";
 import { FAQPreview } from "@/components/preview/FAQPreview";
 import { ChatbotPreview } from "@/components/preview/ChatbotPreview";
+import { ChatbotSettings } from "@/components/chatbot/ChatbotSettings";
+import logo from "@/assets/launchin60.png";
 
 interface GenerationStatus {
   id: string;
@@ -42,6 +44,7 @@ const ProjectDetail = () => {
   const [previewType, setPreviewType] = useState<string>("");
   const [showPreview, setShowPreview] = useState(false);
   const [showEmbedCode, setShowEmbedCode] = useState(false);
+  const [showChatbotSettings, setShowChatbotSettings] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -396,7 +399,7 @@ const ProjectDetail = () => {
               Back to Dashboard
             </Link>
             <Link to="/" className="flex items-center gap-2">
-              <img src="/src/assets/launchin60.png" alt="Launchin60" className="h-32" />
+              <img src={logo} alt="Launchin60" className="h-32" />
             </Link>
           </div>
         </div>
@@ -479,14 +482,24 @@ const ProjectDetail = () => {
                               Design in Canva
                             </Button>
                             {status.content_type === 'chatbot' && (
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => setShowEmbedCode(true)}
-                              >
-                                <Code className="w-4 h-4 mr-2" />
-                                Get Embed Code
-                              </Button>
+                              <>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => setShowChatbotSettings(true)}
+                                >
+                                  <SettingsIcon className="w-4 h-4 mr-2" />
+                                  Configure
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => setShowEmbedCode(true)}
+                                >
+                                  <Code className="w-4 h-4 mr-2" />
+                                  Get Embed Code
+                                </Button>
+                              </>
                             )}
                           </>
                         )}
@@ -588,6 +601,16 @@ const ProjectDetail = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Chatbot Settings Dialog */}
+      <Dialog open={showChatbotSettings} onOpenChange={setShowChatbotSettings}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Chatbot Settings</DialogTitle>
+          </DialogHeader>
+          <ChatbotSettings projectId={id!} />
         </DialogContent>
       </Dialog>
     </div>
