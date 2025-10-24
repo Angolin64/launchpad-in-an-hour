@@ -19,30 +19,52 @@ serve(async (req) => {
       throw new Error('projectId and message are required');
     }
 
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Unauthorized');
+    }
+
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
-    // Initialize Supabase client
+    // Initialize Supabase client with user auth
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
 
-    // Fetch project to get vector_store_id
+    // Verify user session
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Fetch project and verify ownership
     const { data: project, error: projectError } = await supabase
       .from('projects')
-      .select('vector_store_id, name')
+      .select('vector_store_id, name, user_id')
       .eq('id', projectId)
       .single();
 
     if (projectError || !project) {
-      throw new Error('Project not found or no vector store configured');
+      throw new Error('Project not found');
+    }
+
+    if (project.user_id !== user.id) {
+      throw new Error('Forbidden: You do not own this project');
     }
 
     if (!project.vector_store_id) {
       throw new Error('Vector store not configured for this project. Please add a vector_store_id.');
     }
+
+    // Use service role for subsequent operations
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
 
     let currentThreadId = threadId;
     let sessionId = null;
@@ -77,7 +99,7 @@ serve(async (req) => {
       console.log('Thread created:', currentThreadId);
 
       // Save session
-      const { data: session, error: sessionError } = await supabase
+      const { data: session, error: sessionError } = await supabaseService
         .from('ai_chat_sessions')
         .insert({
           project_id: projectId,

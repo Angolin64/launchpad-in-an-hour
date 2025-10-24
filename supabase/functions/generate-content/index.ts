@@ -18,12 +18,25 @@ serve(async (req) => {
       throw new Error('Project ID is required');
     }
 
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Unauthorized');
+    }
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
     );
 
-    // Get project data
+    // Verify user session
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Get project data and verify ownership
     const { data: project, error: projectError } = await supabaseClient
       .from('projects')
       .select('*')
@@ -31,9 +44,19 @@ serve(async (req) => {
       .single();
 
     if (projectError) throw projectError;
+    
+    if (project.user_id !== user.id) {
+      throw new Error('Forbidden: You do not own this project');
+    }
+
+    // Use service role key for subsequent operations
+    const supabaseServiceClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
     // Get generation statuses
-    const { data: statuses, error: statusError } = await supabaseClient
+    const { data: statuses, error: statusError } = await supabaseServiceClient
       .from('generation_status')
       .select('*')
       .eq('project_id', projectId);
@@ -43,7 +66,7 @@ serve(async (req) => {
     console.log(`Starting content generation for project: ${project.name}`);
 
     // Update project status to processing
-    await supabaseClient
+    await supabaseServiceClient
       .from('projects')
       .update({ status: 'processing' })
       .eq('id', projectId);
@@ -57,7 +80,7 @@ serve(async (req) => {
       
       try {
         // Update status to processing
-        await supabaseClient
+        await supabaseServiceClient
           .from('generation_status')
           .update({ 
             status: 'processing', 
@@ -237,13 +260,13 @@ Format as JSON with: { productInfo, commonQueries: [{ query, response, tags }], 
         }
 
         // Update progress to 50%
-        await supabaseClient
+        await supabaseServiceClient
           .from('generation_status')
           .update({ progress: 50, estimated_time_remaining: 60 })
           .eq('id', status.id);
 
         // Save to deliverables
-        await supabaseClient
+        await supabaseServiceClient
           .from('deliverables')
           .upsert({
             project_id: projectId,
@@ -252,7 +275,7 @@ Format as JSON with: { productInfo, commonQueries: [{ query, response, tags }], 
           });
 
         // Mark as complete
-        await supabaseClient
+        await supabaseServiceClient
           .from('generation_status')
           .update({ 
             status: 'complete', 
@@ -269,7 +292,7 @@ Format as JSON with: { productInfo, commonQueries: [{ query, response, tags }], 
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         
         // Mark as error
-        await supabaseClient
+        await supabaseServiceClient
           .from('generation_status')
           .update({ 
             status: 'error', 
@@ -280,7 +303,7 @@ Format as JSON with: { productInfo, commonQueries: [{ query, response, tags }], 
     }
 
     // Update project status to complete
-    await supabaseClient
+    await supabaseServiceClient
       .from('projects')
       .update({ status: 'complete' })
       .eq('id', projectId);
