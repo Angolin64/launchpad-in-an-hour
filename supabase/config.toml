@@ -23,3 +23,6 @@ verify_jwt = true
 
 [functions.scrape-social-media]
 verify_jwt = true
+
+[functions.send-welcome-email]
+verify_jwt = false

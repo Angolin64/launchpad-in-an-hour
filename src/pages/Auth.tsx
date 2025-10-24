@@ -42,10 +42,32 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -55,9 +77,24 @@ const Auth = () => {
 
       if (error) throw error;
 
+      // Send welcome email
+      if (data.user) {
+        try {
+          await supabase.functions.invoke('send-welcome-email', {
+            body: {
+              email: email,
+              firstName: email.split('@')[0]
+            }
+          });
+        } catch (emailError) {
+          console.error('Failed to send welcome email:', emailError);
+          // Don't fail the signup if email fails
+        }
+      }
+
       toast({
-        title: "Account created!",
-        description: "You can now sign in with your credentials.",
+        title: "¡Cuenta creada! 🎉",
+        description: "Te hemos enviado un email de bienvenida. Ya puedes iniciar sesión.",
       });
     } catch (error: any) {
       toast({
