@@ -73,7 +73,7 @@ serve(async (req) => {
 
     // Generate content for each channel
     const formData = project.form_data;
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
 
     for (const status of statuses) {
       const contentType = status.content_type;
@@ -213,14 +213,14 @@ Format as JSON with: { productInfo, commonQueries: [{ query, response, tags }], 
         }
 
         // Call Lovable AI
-        const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+            'Authorization': `Bearer ${GEMINI_API_KEY}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'google/gemini-2.5-flash',
+            model: 'gemini-2.5-flash',
             messages: [
               { role: 'system', content: systemPrompt },
               { role: 'user', content: userPrompt }
@@ -291,7 +291,7 @@ Format as JSON with: { productInfo, commonQueries: [{ query, response, tags }], 
                 bot_name: `${formData.product?.name || 'AI'} Assistant`,
                 greeting_message: parsedContent.greeting || 'Hello! How can I help you today?',
                 response_style: formData.brand?.tone?.toLowerCase() || 'friendly',
-                ai_model: 'google/gemini-2.5-flash',
+                ai_model: 'gemini-2.5-flash',
                 temperature: 0.7,
                 max_tokens: 500,
                 conversation_memory_enabled: true,
