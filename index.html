@@ -38,7 +38,13 @@
       "name": "Launchin60",
       "url": "https://launchin60.com/",
       "logo": "https://launchin60.com/favicon.png",
-      "description": "Launchin60 is an AI-powered platform that generates complete product launch packages — social media content, email sequences, FAQs, and AI support agents — in under 60 minutes."
+      "description": "Launchin60 is an AI-powered platform that generates complete product launch packages — social media content, email sequences, FAQs, and AI support agents — in under 60 minutes.",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "support@launchin60.com",
+        "url": "https://launchin60.com/"
+      }
     }
     </script>
 
@@ -157,12 +163,20 @@
       <!-- Static pre-rendered content for search engines and AI crawlers; replaced on hydration -->
       <header>
         <p><strong>Launchin60</strong> — Launch in one hour</p>
+        <nav aria-label="Main">
+          <a href="#features">Features</a> ·
+          <a href="#how-it-works">How It Works</a> ·
+          <a href="#pricing">Pricing</a> ·
+          <a href="#faq">FAQ</a> ·
+          <a href="/auth">Dashboard</a>
+        </nav>
       </header>
       <main>
         <h1>From Idea to Launch In One Hour</h1>
         <p>Launch your product in under 60 minutes. Get a complete automated launch package: YouTube scripts, Instagram carousels, email sequences, FAQs, and an AI support agent — all generated and ready to deploy.</p>
+        <p><a href="/auth"><strong>Start Your Launch →</strong></a></p>
 
-        <section>
+        <section id="features">
           <h2>Everything You Need to Launch</h2>
           <ul>
             <li><strong>YouTube Shorts Scripts</strong> — 5 engaging scripts with hooks, value delivery, and clear CTAs. 30-45 seconds, optimized for maximum retention.</li>
@@ -174,23 +188,24 @@
           </ul>
         </section>
 
-        <section>
+        <section id="how-it-works">
           <h2>How It Works</h2>
           <ol>
             <li><strong>Fill the Form</strong> — Tell us about your product, audience, brand, and channels. Takes 5-10 minutes.</li>
             <li><strong>AI Generation</strong> — Our AI creates personalized content for all channels while you grab coffee.</li>
-            <li><strong>Review &amp; Download</strong> — Get access to all assets, Canva designs, and your AI support agent.</li>
-            <li><strong>Launch</strong> — Deploy your content across channels and start growing your audience.</li>
+            <li><strong>Review &amp; Download</strong> — Get access to all assets, designs in <a href="https://www.canva.com" rel="noopener">Canva</a>, and your AI support agent.</li>
+            <li><strong>Launch</strong> — Deploy your content across channels like <a href="https://www.youtube.com/creators/" rel="noopener">YouTube</a> and <a href="https://creators.instagram.com/" rel="noopener">Instagram</a>, and start growing your audience.</li>
           </ol>
         </section>
 
-        <section>
+        <section id="pricing">
           <h2>Pricing</h2>
           <p><strong>Launch Package — $249 one-time.</strong> Complete launch package with all content, designs, and your AI support agent.</p>
           <p><strong>Support &amp; Updates — $29/month (optional).</strong> Ongoing support and content updates.</p>
+          <p><a href="/auth"><strong>Get your Launch Package →</strong></a></p>
         </section>
 
-        <section>
+        <section id="faq">
           <h2>Frequently Asked Questions</h2>
           <h3>What is Launchin60?</h3>
           <p>Launchin60 is an AI-powered platform that generates a complete product launch package in under 60 minutes: content for YouTube, Instagram, and email, plus FAQ documentation and an embeddable AI support chatbot.</p>
@@ -205,9 +220,14 @@
           <h3>Do I need marketing experience?</h3>
           <p>No. Launchin60 is built for creators and founders without a marketing team.</p>
         </section>
+
+        <section id="contact">
+          <h2>Contact</h2>
+          <p>Questions? Email us at <a href="mailto:support@launchin60.com">support@launchin60.com</a> or <a href="/auth">create an account</a> to chat with our AI support agent.</p>
+        </section>
       </main>
       <footer>
-        <p>© Launchin60 — <a href="https://launchin60.com/">launchin60.com</a></p>
+        <p>© Launchin60 — <a href="https://launchin60.com/">launchin60.com</a> · <a href="mailto:support@launchin60.com">support@launchin60.com</a></p>
       </footer>
     </div>
     <script type="module" src="/src/main.tsx"></script>
